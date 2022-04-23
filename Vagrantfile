@@ -21,14 +21,15 @@ Vagrant.configure("2") do |config|
           box.vm.synced_folder ".", "/vagrant", disabled: true
           box.vm.network "private_network", ip: boxconfig[:ip_addr]
 
-          box.vm.provider :virtualbox do |vb|
-            vb.customize ["modifyvm", :id, "--memory", "200"]
-          end
+#          box.vm.provider :virtualbox do |vb|
+#            vb.customize ["modifyvm", :id, "--memory", "1024"]            
+#          end
           
           box.vm.provision "shell", inline: <<-SHELL
             mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh
             sed -i '65s/PasswordAuthentication no/PasswordAuthentication yes/g' /etc/ssh/sshd_config
             systemctl restart sshd
+            dnf install -y python39
           SHELL
 
       end
