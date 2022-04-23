@@ -39,3 +39,27 @@ nginx | SUCCESS => {
 }
 [tesla@fedora homework12]$
 ```
+```
+[tesla@fedora homework12]$ cat ansible.cfg
+[defaults]
+inventory = staging/hosts
+remote_user = vagrant
+host_key_checking = False
+retry_files_enabled = False
+[tesla@fedora homework12]$ cat staging/hosts
+[web]
+nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key
+```
+
+```
+[tesla@fedora homework12]$ ansible nginx -m ping
+[WARNING]: Platform linux on host nginx is using the discovered Python interpreter at /usr/libexec/platform-python, but future installation of another Python interpreter could change this.
+See https://docs.ansible.com/ansible/2.9/reference_appendices/interpreter_discovery.html for more information.
+nginx | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+```
