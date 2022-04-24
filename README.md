@@ -235,3 +235,106 @@ PLAY RECAP *********************************************************************
 nginx                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
 ```
+
+```
+[tesla@fedora homework12]$ cat hw.yml
+---
+[tesla@fedora homework12]$ cat hw.yml
+---
+- name: Install EPEL Repo
+  hosts: nginx
+  become: true
+  tasks:
+    - name: Install EPEL Repo package from standard repo
+      dnf:
+        name: epel-release
+        state: present
+      tags:
+       - epel
+    - name: Install nginx package from epel repo
+      dnf:
+        name: nginx
+        state: latest
+      tags:
+       - nginx-package
+       - packages
+[tesla@fedora homework12]$ ansible-playbook hw.yml --list-tags
+
+playbook: hw.yml
+
+  play #1 (nginx): Install EPEL Repo	TAGS: []
+      TASK TAGS: [epel, nginx-package, packages]
+```
+
+```
+[tesla@fedora homework12]$ ansible-playbook hw.yml -t nginx-package
+
+PLAY [Install EPEL Repo] ************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] **************************************************************************************************************************************************************************
+ok: [nginx]
+
+TASK [Install nginx package from epel repo] *****************************************************************************************************************************************************
+changed: [nginx]
+
+PLAY RECAP **************************************************************************************************************************************************************************************
+nginx                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+```
+
+```
+tesla@fedora homework12]$ tree -L 3
+.
+├── 2022-04-23-20-36-44.006-VBoxHeadless-6251.log
+├── ansible.cfg
+├── hw.yml
+├── README.md
+├── staging
+│   ├── hosts
+│   └── host_vars
+│       └── nginx.yml
+└── Vagrantfile
+
+2 directories, 7 files
+```
+
+```
+[tesla@fedora homework12]$ cat staging/host_vars/nginx.yml
+nginx_listen_port: 8080
+```
+
+```
+[tesla@fedora homework12]$ cat staging/host_vars/nginx.yml
+ansible_host: 127.0.0.1
+ansible_port: 2222
+ansible_private_key_file: .vagrant/machines/nginx/virtualbox/private_key
+nginx_listen_port: 8080
+```
+
+```
+tesla@fedora homework12]$ ansible-inventory --list -i staging/hosts
+{
+    "_meta": {
+        "hostvars": {
+            "nginx": {
+                "ansible_host": "127.0.0.1",
+                "ansible_port": 2222,
+                "ansible_private_key_file": ".vagrant/machines/nginx/virtualbox/private_key",
+                "nginx_listen_port": 8080
+            }
+        }
+    },
+    "all": {
+        "children": [
+            "ungrouped",
+            "web"
+        ]
+    },
+    "web": {
+        "hosts": [
+            "nginx"
+        ]
+    }
+}
+```
+
