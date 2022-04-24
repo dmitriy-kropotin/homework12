@@ -183,7 +183,7 @@ nginx | CHANGED => {
   become: true
   tasks:
     - name: Install EPEL Repo package from standard repo
-      yum:
+      dnf:
         name: epel-release
         state: present
 ```
@@ -201,5 +201,6 @@ ok: [nginx]
 
 PLAY RECAP ***********************************************************************************************************************************************************************************
 nginx                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
 
 ```
