@@ -174,3 +174,32 @@ nginx | CHANGED => {
     ]
 }
 ```
+
+```
+[tesla@fedora homework12]$ cat epel.yml
+---
+- name: Install EPEL Repo
+  hosts: nginx
+  become: true
+  tasks:
+    - name: Install EPEL Repo package from standard repo
+      yum:
+        name: epel-release
+        state: present
+```
+
+```
+[tesla@fedora homework12]$ ansible-playbook epel.yml
+
+PLAY [Install EPEL Repo] *********************************************************************************************************************************************************************
+
+TASK [Gathering Facts] ***********************************************************************************************************************************************************************
+ok: [nginx]
+
+TASK [Install EPEL Repo package from standard repo] ******************************************************************************************************************************************
+ok: [nginx]
+
+PLAY RECAP ***********************************************************************************************************************************************************************************
+nginx                      : ok=2    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+```
