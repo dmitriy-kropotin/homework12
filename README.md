@@ -413,3 +413,4 @@ nginx                      : ok=6    changed=5    unreachable=0    failed=0    s
 
 
 ```
+![Снимок экрана 2022-04-24 в 11 02 51](https://user-images.githubusercontent.com/98701086/164966485-1764af46-72fe-499e-a767-e9a772cb5c65.png)
