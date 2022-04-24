@@ -366,7 +366,7 @@ tesla@fedora homework12]$ ansible-inventory --list -i staging/hosts
     - name: NGINX | Create NGINX config file from template
       template:
         src: templates/nginx.conf.j2
-        dest: /tmp/nginx.conf
+        dest: /etc/nginx/nginx.conf
       notify:
         - reload nginx
       tags:
