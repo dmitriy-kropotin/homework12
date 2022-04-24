@@ -30,7 +30,17 @@
         - reload nginx
       tags:
        - nginx-configuration
-         
+
+    - name: firewalld | add nginx port 
+      firewalld:
+        port: 8080/tcp
+        permanent: yes
+        state: enabled
+      notify:
+        - restart firewalld
+      tags:
+        - nginx-configuration
+
   handlers:
     - name: restart nginx
       systemd:
@@ -42,3 +52,8 @@
       systemd:
         name: nginx
         state: reloaded
+
+    - name: restart firewalld
+      systemd:
+        name: firewalld
+        state: restarted
