@@ -354,6 +354,28 @@ tesla@fedora homework12]$ ansible-inventory --list -i staging/hosts
     }
 }
 ```
+18. Добавляю template templates/nginx.conf.j2 для конфигурирования nginx сервера
+
+```
+tesla@fedora homework12]$ cat templates/nginx.conf.j2
+# {{ ansible_managed }}
+events {
+    worker_connections 1024;
+}
+
+http {
+    server {
+        listen       {{ nginx_listen_port }} default_server;
+        server_name  default_server;
+        root         /usr/share/nginx/html;
+
+        location / {
+        }
+    }
+}
+```
+19. Добавляю в playbook создание файла конфигурации для nginx, handler и notify. Так же добавлю task - добавить порт 8080 в разрешенные в firewalld, и handler на перезапуск firewalld (не должен быть web сервер без firewall :))
+
 ```
 [tesla@fedora homework12]$ cat hw.yml
 ---
@@ -389,6 +411,16 @@ tesla@fedora homework12]$ ansible-inventory --list -i staging/hosts
       tags:
        - nginx-configuration
 
+    - name: firewalld | add nginx port
+      firewalld:
+        port: 8080/tcp
+        permanent: yes
+        state: enabled
+      notify:
+        - restart firewalld
+      tags:
+        - nginx-configuration
+
   handlers:
     - name: restart nginx
       systemd:
@@ -400,7 +432,14 @@ tesla@fedora homework12]$ ansible-inventory --list -i staging/hosts
       systemd:
         name: nginx
         state: reloaded
+
+    - name: restart firewalld
+      systemd:
+        name: firewalld
+        state: restarted
 ```
+
+20. Пересоздаю виртуальную машину через vagrant destroy&&vagrant up, и запускаю playbook "в чистую"
 
 ```
 [tesla@fedora homework12]$ ansible-playbook hw.yml
@@ -419,15 +458,20 @@ changed: [nginx]
 TASK [NGINX | Create NGINX config file from template] *******************************************************************************************************************************************
 changed: [nginx]
 
+TASK [firewalld | add nginx port] ***************************************************************************************************************************************************************************
+changed: [nginx]
+
 RUNNING HANDLER [restart nginx] *****************************************************************************************************************************************************************
 changed: [nginx]
 
 RUNNING HANDLER [reload nginx] ******************************************************************************************************************************************************************
 changed: [nginx]
 
-PLAY RECAP **************************************************************************************************************************************************************************************
-nginx                      : ok=6    changed=5    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+RUNNING HANDLER [restart firewalld] *************************************************************************************************************************************************************
+changed: [nginx]
 
+PLAY RECAP **************************************************************************************************************************************************************************************
+nginx                      : ok=8    changed=7    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
 ```
 ![Снимок экрана 2022-04-24 в 11 02 51](https://user-images.githubusercontent.com/98701086/164966485-1764af46-72fe-499e-a767-e9a772cb5c65.png)
