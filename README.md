@@ -337,4 +337,50 @@ tesla@fedora homework12]$ ansible-inventory --list -i staging/hosts
     }
 }
 ```
+```
+[tesla@fedora homework12]$ cat hw.yml
+---
+- name: homework ansible
+  hosts: nginx
+  become: true
 
+  tasks:
+    - name: Install EPEL Repo package from standard repo
+      dnf:
+        name: epel-release
+        state: present
+      tags:
+       - epel-package
+       - packages
+
+    - name: Install nginx package from epel repo
+      dnf:
+        name: nginx
+        state: latest
+      notify:
+        - restart nginx
+      tags:
+       - nginx-package
+       - packages
+
+    - name: NGINX | Create NGINX config file from template
+      template:
+        src: templates/nginx.conf.j2
+        dest: /tmp/nginx.conf
+      notify:
+        - reload nginx
+      tags:
+       - nginx-configuration
+
+  handlers:
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
+        enabled: yes
+
+    - name: reload nginx
+      systemd:
+        name: nginx
+        state: reloaded
+```
