@@ -1,0 +1,4 @@
+ansible_host: 127.0.0.1 
+ansible_port: 2222 
+ansible_private_key_file: .vagrant/machines/nginx/virtualbox/private_key
+nginx_listen_port: 8080
