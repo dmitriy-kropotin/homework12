@@ -21,6 +21,13 @@ Host nginx
 
 [tesla@fedora homework12]$
 ```
+3. Создаю inventory
+```
+[tesla@fedora homework12]$ cat staging/hosts
+[web]
+nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key
+```
+4. Проверяю работоспособность ansible
 
 ```
 [tesla@fedora homework12]$ ansible nginx -i staging/hosts -m ping
@@ -37,8 +44,9 @@ nginx | SUCCESS => {
     "changed": false,
     "ping": "pong"
 }
-[tesla@fedora homework12]$
 ```
+5. Создаю файл конфигурации
+
 ```
 [tesla@fedora homework12]$ cat ansible.cfg
 [defaults]
@@ -50,6 +58,7 @@ retry_files_enabled = False
 [web]
 nginx ansible_host=127.0.0.1 ansible_port=2222 ansible_private_key_file=.vagrant/machines/nginx/virtualbox/private_key
 ```
+6. Проверяю, что он работает корректно
 
 ```
 [tesla@fedora homework12]$ ansible nginx -m ping
@@ -63,6 +72,7 @@ nginx | SUCCESS => {
     "ping": "pong"
 }
 ```
+7. Пробую поставить epel в host nginx через ad hoc команду, с помощью модуля dnf
 ```
 [tesla@fedora homework12]$ ansible nginx -m dnf -a "name=epel-release state=present" -b
 nginx | CHANGED => {
@@ -78,6 +88,7 @@ nginx | CHANGED => {
     ]
 }
 ```
+8. Обновляю все пакеты на хосте nginx через ad hoc команду, с помощью модуля dnf
 
 ```
 [tesla@fedora homework12]$ ansible nginx -m dnf -a "name=* state=latest" -b
@@ -174,6 +185,7 @@ nginx | CHANGED => {
     ]
 }
 ```
+9. Создаю тестовый playbook epel.yml
 
 ```
 [tesla@fedora homework12]$ cat epel.yml
@@ -187,6 +199,7 @@ nginx | CHANGED => {
         name: epel-release
         state: present
 ```
+10. Проверяю его работоспособность
 
 ```
 [tesla@fedora homework12]$ ansible-playbook epel.yml
@@ -204,6 +217,7 @@ nginx                      : ok=2    changed=0    unreachable=0    failed=0    s
 
 
 ```
+11. Удаляю с хоста nginx пакет oracle-epel-release-el8 с помощь модулья dnf
 
 ```
 [tesla@fedora homework12]$ ansible nginx -m dnf -a "name=oracle-epel-release-el8 state=absent" -b
@@ -219,6 +233,7 @@ nginx | CHANGED => {
     ]
 }
 ```
+12. Еще раз запускаю playbook
 
 ```
 [tesla@fedora homework12]$ ansible-playbook epel.yml
@@ -235,10 +250,11 @@ PLAY RECAP *********************************************************************
 nginx                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
 ```
+playbook работает!!!
+
+13. Теперь создаю playbook hw.yml для выполнения домашней работы. Добавляю в него task установки nginx
 
 ```
-[tesla@fedora homework12]$ cat hw.yml
----
 [tesla@fedora homework12]$ cat hw.yml
 ---
 - name: Install EPEL Repo
@@ -265,6 +281,7 @@ playbook: hw.yml
   play #1 (nginx): Install EPEL Repo	TAGS: []
       TASK TAGS: [epel, nginx-package, packages]
 ```
+14. Проверяю работоспособность 
 
 ```
 [tesla@fedora homework12]$ ansible-playbook hw.yml -t nginx-package
@@ -281,6 +298,7 @@ PLAY RECAP *********************************************************************
 nginx                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
 
 ```
+15. Создаю файл staging/host_vars/nginx.yml, в котором определю параметры для хоста nginx
 
 ```
 tesla@fedora homework12]$ tree -L 3
@@ -296,12 +314,10 @@ tesla@fedora homework12]$ tree -L 3
 └── Vagrantfile
 
 2 directories, 7 files
-```
-
-```
 [tesla@fedora homework12]$ cat staging/host_vars/nginx.yml
 nginx_listen_port: 8080
 ```
+16. Перенесу в него все параметры для хоста
 
 ```
 [tesla@fedora homework12]$ cat staging/host_vars/nginx.yml
@@ -310,6 +326,7 @@ ansible_port: 2222
 ansible_private_key_file: .vagrant/machines/nginx/virtualbox/private_key
 nginx_listen_port: 8080
 ```
+17. Проверяю, что все корректно.
 
 ```
 tesla@fedora homework12]$ ansible-inventory --list -i staging/hosts
