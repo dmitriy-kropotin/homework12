@@ -204,3 +204,34 @@ nginx                      : ok=2    changed=0    unreachable=0    failed=0    s
 
 
 ```
+
+```
+[tesla@fedora homework12]$ ansible nginx -m dnf -a "name=oracle-epel-release-el8 state=absent" -b
+nginx | CHANGED => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/libexec/platform-python"
+    },
+    "changed": true,
+    "msg": "",
+    "rc": 0,
+    "results": [
+        "Removed: oracle-epel-release-el8-1.0-5.el8.x86_64"
+    ]
+}
+```
+
+```
+[tesla@fedora homework12]$ ansible-playbook epel.yml
+
+PLAY [Install EPEL Repo] ************************************************************************************************************************************************************************
+
+TASK [Gathering Facts] **************************************************************************************************************************************************************************
+ok: [nginx]
+
+TASK [Install EPEL Repo package from standard repo] *********************************************************************************************************************************************
+changed: [nginx]
+
+PLAY RECAP **************************************************************************************************************************************************************************************
+nginx                      : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+```
